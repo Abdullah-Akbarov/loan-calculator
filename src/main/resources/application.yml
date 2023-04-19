@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5432/loan_calculator
+  jpa:
+    hibernate:
+      ddl-auto: update
+jwt:
+  validity: 3_600_000
