@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseModel login(LoginDto loginDto) {
         log.info(">> login: username=" + loginDto.getUsername());
         Optional<User> username = userRepository.findByUsername(loginDto.getUsername());
-        if (!username.isPresent()) {
+        if (username.isEmpty()) {
             log.warn("<< login: Not found");
             return new ResponseModel(MessageModel.NOT_FOUND);
         }
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseModel register(UserDto userDto) {
         log.info(">> register: username=" + userDto.getUsername() + " phoneNumber=" + userDto.getPhoneNumber());
-        if (userRepository.existsByUsernameAndPhoneNumber(userDto.getUsername(), userDto.getPhoneNumber())) {
+        if (userRepository.existsByUsernameOrPhoneNumber(userDto.getUsername(), userDto.getPhoneNumber())) {
             log.warn("<< register: Record already exist");
             return new ResponseModel(MessageModel.RECORD_AlREADY_EXIST);
         }

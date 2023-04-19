@@ -50,15 +50,15 @@ public class AuthController {
         String phoneNumber = userDto.getPhoneNumber();
         String username = userDto.getUsername();
         log.info(">> saveUser: " + userDto);
-        if (username.length() < 5) {
+        if (username == null || username.length() < 5) {
             log.warn("<< register: Invalid username");
             return new ResponseModel(MessageModel.USERNAME_TOO_SHORT);
         }
-        if (password.length() < 8) {
+        if (password == null || password.length() < 8) {
             log.warn("<< register: Invalid password");
             return new ResponseModel(MessageModel.PASSWORD_TOO_SHORT);
         }
-        if (phoneNumber.matches("^\\+998\\d{9}$")) {
+        if (phoneNumber == null || !phoneNumber.matches("^\\+998\\d{9}$")) {
             log.warn("<< register: Invalid phone number");
             return new ResponseModel(MessageModel.INVALID_PHONE_NUMBER);
         }
