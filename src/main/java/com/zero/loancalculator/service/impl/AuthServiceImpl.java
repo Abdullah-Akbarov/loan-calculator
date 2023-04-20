@@ -32,6 +32,10 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public ResponseModel login(LoginDto loginDto) {
+        ResponseModel responseModel = validateLoginDetails(loginDto);
+        if (responseModel != null) {
+            return responseModel;
+        }
         log.info(">> login: username=" + loginDto.getUsername());
         Optional<User> username = userRepository.findByUsername(loginDto.getUsername());
         if (username.isEmpty()) {
@@ -47,13 +51,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * This method is used to save new User entity in database.
+     * This method is used to save new User entity in a database.
      *
      * @param userDto The User information to save.
      * @return jwt token.
      */
     @Override
     public ResponseModel register(UserDto userDto) {
+        ResponseModel responseModel = validateRegisterDetails(userDto);
+        if (responseModel != null) {
+            return responseModel;
+        }
         log.info(">> register: username=" + userDto.getUsername() + " phoneNumber=" + userDto.getPhoneNumber());
         if (userRepository.existsByUsernameOrPhoneNumber(userDto.getUsername(), userDto.getPhoneNumber())) {
             log.warn("<< register: Record already exist");
@@ -61,9 +69,14 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userDto.toEntity();
         encodePassword(user);
-        userRepository.save(user);
-        log.info("<< register: Success");
-        return new ResponseModel(MessageModel.SUCCESS);
+        try {
+            userRepository.save(user);
+            log.info("<< register: Success");
+            return new ResponseModel(MessageModel.SUCCESS);
+        } catch (Exception e) {
+            log.warn("<< saveUser: Couldn't save record exception=" + e.getMessage());
+            return new ResponseModel(MessageModel.COULD_NOT_SAVE_RECORD, e.getMessage());
+        }
     }
 
     /**
@@ -73,4 +86,34 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(encoder.encode(user.getPassword()));
     }
 
+    private ResponseModel validateRegisterDetails(UserDto userDto) {
+        String password = userDto.getPassword();
+        String phoneNumber = userDto.getPhoneNumber();
+        String username = userDto.getUsername();
+        if (username == null || username.length() < 5) {
+            log.warn("<< register: Invalid username");
+            return new ResponseModel(MessageModel.USERNAME_TOO_SHORT);
+        }
+        if (password == null || password.length() < 8) {
+            log.warn("<< register: Invalid password");
+            return new ResponseModel(MessageModel.PASSWORD_TOO_SHORT);
+        }
+        if (phoneNumber == null || !phoneNumber.matches("^\\+998\\d{9}$")) {
+            log.warn("<< register: Invalid phone number");
+            return new ResponseModel(MessageModel.INVALID_PHONE_NUMBER);
+        }
+        return null;
+    }
+
+    private ResponseModel validateLoginDetails(LoginDto loginDto) {
+        if (loginDto.getUsername().length() < 5) {
+            log.warn("<< login: Invalid username");
+            return new ResponseModel(MessageModel.USERNAME_TOO_SHORT);
+        }
+        if (loginDto.getPassword().length() < 8) {
+            log.warn("<< login: Invalid password");
+            return new ResponseModel(MessageModel.PASSWORD_TOO_SHORT);
+        }
+        return null;
+    }
 }

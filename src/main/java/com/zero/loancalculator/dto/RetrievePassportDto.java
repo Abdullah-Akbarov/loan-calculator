@@ -12,15 +12,15 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RetrievePassportDto {
-    private String series;
+    private String serial;
     private String number;
 
-    public String getSeries() {
-        return series;
+    public String getSerial() {
+        return serial;
     }
 
-    public void setSeries(String series) {
-        this.series = series.toUpperCase();
+    public void setSerial(String serial) {
+        this.serial = serial.toUpperCase();
     }
 
     public String getNumber() {

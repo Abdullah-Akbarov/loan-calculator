@@ -4,19 +4,16 @@
 
 package com.zero.loancalculator.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zero.loancalculator.domain.enums.Gender;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity(name = "passport")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Passport {
@@ -24,8 +21,8 @@ public class Passport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @Column(name = "series", nullable = false)
-    private String series;
+    @Column(name = "serial", nullable = false)
+    private String serial;
     @Column(name = "number", nullable = false)
     private String number;
     @Enumerated(EnumType.STRING)
@@ -43,8 +40,4 @@ public class Passport {
     private String lastName;
     @Column(name = "father_name", nullable = false)
     private String fatherName;
-    @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
 }

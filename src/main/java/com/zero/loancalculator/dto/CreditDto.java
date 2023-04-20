@@ -12,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditDto {
-    private String passportSeries;
+    private String passportSerial;
     private String passportNumber;
     private String description;
     private double amount;
@@ -20,12 +20,12 @@ public class CreditDto {
     private double interestRate;
     private double profit;
 
-    public String getPassportSeries() {
-        return passportSeries;
+    public String getPassportSerial() {
+        return passportSerial;
     }
 
-    public void setPassportSeries(String passportSeries) {
-        this.passportSeries = passportSeries.toUpperCase();
+    public void setPassportSerial(String passportSerial) {
+        this.passportSerial = passportSerial.toUpperCase();
     }
 
     public String getPassportNumber() {

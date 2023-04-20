@@ -32,10 +32,14 @@ public class CreditServiceImpl implements CreditService {
      */
     @Override
     public ResponseModel getCredit(CreditDto creditDto) {
+        ResponseModel responseModel = validateCreditDetails(creditDto);
+        if (responseModel != null) {
+            return responseModel;
+        }
         log.info(">> getCredit: " + creditDto);
+        Optional<Passport> bySerialAndNumber = passportRepository.findBySerialAndNumber(creditDto.getPassportSerial(), creditDto.getPassportNumber());
         Passport passport = getCurrentUser().getPassport();
-        if (passport == null || !(passport.getSeries().equals(creditDto.getPassportSeries())
-                && passport.getNumber().equals(creditDto.getPassportNumber()))) {
+        if (passport == null || !(passport.equals(bySerialAndNumber.get()))) {
             log.warn("<< getCredit: Unauthorized");
             return new ResponseModel(MessageModel.UNAUTHORIZED);
         }
@@ -65,9 +69,14 @@ public class CreditServiceImpl implements CreditService {
         credit.setStartDate(localDate);
         credit.setEndDate(localDate.plusMonths(monthsLength));
         credit.setDescription(description);
-        Credit save = creditRepository.save(credit);
-        log.info("<< getCredit: Success");
-        return new ResponseModel(MessageModel.SUCCESS, save);
+        try {
+            Credit save = creditRepository.save(credit);
+            log.info("<< getCredit: Success");
+            return new ResponseModel(MessageModel.SUCCESS, save);
+        } catch (Exception e) {
+            log.warn("<< getCredit: Couldn't save record exception=" + e.getMessage());
+            return new ResponseModel(MessageModel.COULD_NOT_SAVE_RECORD);
+        }
     }
 
     /**
@@ -90,5 +99,39 @@ public class CreditServiceImpl implements CreditService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         return user;
+    }
+
+    private ResponseModel validateCreditDetails(CreditDto creditDto) {
+        String passportNumber = creditDto.getPassportNumber();
+        String passportSeries = creditDto.getPassportSerial();
+        double interestRate = creditDto.getInterestRate();
+        double profit = creditDto.getProfit();
+        double amount = creditDto.getAmount();
+        int monthsLength = creditDto.getMonthsLength();
+        if (passportSeries == null || passportSeries.length() != 2 || !passportSeries.matches("^[A-Za-z]+$")) {
+            log.warn("<< getCredit: Invalid passport series=" + passportSeries);
+            return new ResponseModel(503, "Invalid passport series");
+        }
+        if (passportNumber == null || passportNumber.length() != 7 || !passportNumber.matches("\\d+")) {
+            log.warn("<< getCredit: Invalid passport number=" + passportNumber);
+            return new ResponseModel(503, "Invalid passport number");
+        }
+        if (interestRate < 0 || interestRate > 100) {
+            log.warn("<< getCredit: Invalid interest rate=" + interestRate);
+            return new ResponseModel(503, "Invalid interest rate");
+        }
+        if (profit < 0) {
+            log.warn("<< getCredit: Invalid profit=" + profit);
+            return new ResponseModel(503, "Invalid profit");
+        }
+        if (amount < 0) {
+            log.warn("<< getCredit: Invalid amount=" + amount);
+            return new ResponseModel(503, "Invalid amount");
+        }
+        if (monthsLength < 0) {
+            log.warn("<< getCredit: Invalid months length=" + monthsLength);
+            return new ResponseModel(503, "Invalid months length");
+        }
+        return null;
     }
 }

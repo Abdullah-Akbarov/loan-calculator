@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PassportDto {
-    private String series;
+    private String serial;
     private String number;
     private Gender gender;
     private LocalDate birthDate;
@@ -28,7 +28,7 @@ public class PassportDto {
 
     public Passport toEntity() {
         Passport passport = new Passport();
-        passport.setSeries(series);
+        passport.setSerial(serial);
         passport.setNumber(number);
         passport.setGender(gender);
         passport.setBirthDate(birthDate);
@@ -40,12 +40,12 @@ public class PassportDto {
         return passport;
     }
 
-    public String getSeries() {
-        return series;
+    public String getSerial() {
+        return serial;
     }
 
-    public void setSeries(String series) {
-        this.series = series.toUpperCase();
+    public void setSerial(String serial) {
+        this.serial = serial.toUpperCase();
     }
 
     public String getNumber() {

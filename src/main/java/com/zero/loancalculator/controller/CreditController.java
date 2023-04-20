@@ -23,36 +23,6 @@ public class CreditController {
     @PostMapping
     public ResponseModel getCredit(@RequestBody CreditDto creditDto) {
         log.info(">> getCredit: " + creditDto);
-        String passportNumber = creditDto.getPassportNumber();
-        String passportSeries = creditDto.getPassportSeries();
-        double interestRate = creditDto.getInterestRate();
-        double profit = creditDto.getProfit();
-        double amount = creditDto.getAmount();
-        int monthsLength = creditDto.getMonthsLength();
-        if (passportSeries == null || passportSeries.length() != 2) {
-            log.warn("<< getCredit: Invalid passport series=" + passportSeries);
-            return new ResponseModel(503, "Invalid passport series");
-        }
-        if (passportNumber == null || passportNumber.length() != 7) {
-            log.warn("<< getCredit: Invalid passport number=" + passportNumber);
-            return new ResponseModel(503, "Invalid passport number");
-        }
-        if (interestRate < 0 || interestRate > 100) {
-            log.warn("<< getCredit: Invalid interest rate=" + interestRate);
-            return new ResponseModel(503, "Invalid interest rate");
-        }
-        if (profit < 0) {
-            log.warn("<< getCredit: Invalid profit=" + profit);
-            return new ResponseModel(503, "Invalid profit");
-        }
-        if (amount < 0) {
-            log.warn("<< getCredit: Invalid amount=" + amount);
-            return new ResponseModel(503, "Invalid amount");
-        }
-        if (monthsLength < 0) {
-            log.warn("<< getCredit: Invalid months length=" + monthsLength);
-            return new ResponseModel(503, "Invalid months length");
-        }
         return creditService.getCredit(creditDto);
     }
 

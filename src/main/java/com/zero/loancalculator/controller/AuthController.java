@@ -2,7 +2,6 @@ package com.zero.loancalculator.controller;
 
 import com.zero.loancalculator.dto.LoginDto;
 import com.zero.loancalculator.dto.UserDto;
-import com.zero.loancalculator.model.MessageModel;
 import com.zero.loancalculator.model.ResponseModel;
 import com.zero.loancalculator.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,6 @@ public class AuthController {
     @GetMapping("/login")
     public ResponseModel login(@RequestBody LoginDto loginDto) {
         log.info(">> login: username=" + loginDto.getUsername());
-        if (loginDto.getUsername().length() < 5) {
-            log.warn("<< login: Invalid username");
-            return new ResponseModel(MessageModel.USERNAME_TOO_SHORT);
-        }
-        if (loginDto.getPassword().length() < 8) {
-            log.warn("<< login: Invalid password");
-            return new ResponseModel(MessageModel.PASSWORD_TOO_SHORT);
-        }
         return authService.login(loginDto);
     }
 
@@ -46,27 +37,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     ResponseModel saveUser(@RequestBody UserDto userDto) {
-        String password = userDto.getPassword();
-        String phoneNumber = userDto.getPhoneNumber();
-        String username = userDto.getUsername();
-        log.info(">> saveUser: " + userDto);
-        if (username == null || username.length() < 5) {
-            log.warn("<< register: Invalid username");
-            return new ResponseModel(MessageModel.USERNAME_TOO_SHORT);
-        }
-        if (password == null || password.length() < 8) {
-            log.warn("<< register: Invalid password");
-            return new ResponseModel(MessageModel.PASSWORD_TOO_SHORT);
-        }
-        if (phoneNumber == null || !phoneNumber.matches("^\\+998\\d{9}$")) {
-            log.warn("<< register: Invalid phone number");
-            return new ResponseModel(MessageModel.INVALID_PHONE_NUMBER);
-        }
-        try {
-            return authService.register(userDto);
-        } catch (Exception e) {
-            log.warn("<< saveUser: Couldn't save record exception=" + e.getMessage());
-            return new ResponseModel(MessageModel.COULD_NOT_SAVE_RECORD, e.getMessage());
-        }
+        log.info(">> register: " + userDto);
+        return authService.register(userDto);
     }
 }
